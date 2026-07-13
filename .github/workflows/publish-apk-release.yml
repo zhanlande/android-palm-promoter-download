@@ -1,0 +1,49 @@
+name: Publish APK Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        required: true
+        default: v3.8.1
+      version:
+        description: Version shown in the release title
+        required: true
+        default: 3.8.1
+      source_url:
+        description: APK URL decoded from the QR code
+        required: true
+        default: https://chuanyinet-caesar-store.oss-eu-west-1.aliyuncs.com/ANDROID-PALM-PROMOTER/ANDROID-PALM-PROMOTER_nile-rn-dev/523/Nile-3.8.1-847-release.apk
+      asset_name:
+        description: Keep this fixed so the latest download URL never changes
+        required: true
+        default: ANDROID-PALM-PROMOTER_latest.apk
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download APK
+        run: |
+          curl -L --fail --retry 3 --output "${{ inputs.asset_name }}" "${{ inputs.source_url }}"
+          sha256sum "${{ inputs.asset_name }}"
+
+      - name: Create or update release
+        run: |
+          set -euo pipefail
+          tag="${{ inputs.tag }}"
+          title="ANDROID-PALM-PROMOTER ${{ inputs.version }}"
+          notes=$'Fixed latest APK asset:\n\nhttps://github.com/'"$GITHUB_REPOSITORY"'/releases/latest/download/${{ inputs.asset_name }}'
+
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" "${{ inputs.asset_name }}" --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --title "$title" --notes "$notes" --latest
+          else
+            gh release create "$tag" "${{ inputs.asset_name }}" --repo "$GITHUB_REPOSITORY" --title "$title" --notes "$notes" --latest
+          fi
