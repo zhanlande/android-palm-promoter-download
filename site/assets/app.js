@@ -8,7 +8,7 @@
     : release.sourceUrl;
 
   const title = `${release.appName} ${release.channel}`;
-  document.title = `${release.appName} ${release.version} 下载`;
+  document.title = `${release.appName} ${release.version} Download`;
   setText("appName", release.appName);
   setText("subtitle", `${release.channel} · ${release.sourceFileName}`);
   setText("version", `${release.version} (${release.build})`);
@@ -26,9 +26,9 @@
   const copyButton = document.getElementById("copyButton");
   copyButton.addEventListener("click", async () => {
     await navigator.clipboard.writeText(downloadUrl);
-    copyButton.textContent = "已复制";
+    copyButton.textContent = "Copied";
     setTimeout(() => {
-      copyButton.textContent = "复制下载链接";
+      copyButton.textContent = "Copy Download Link";
     }, 1400);
   });
 })();
