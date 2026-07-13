@@ -18,7 +18,7 @@ on:
       asset_name:
         description: Keep this fixed so the latest download URL never changes
         required: true
-        default: ANDROID-PALM-PROMOTER_latest.apk
+        default: nile_latest.apk
 
 permissions:
   contents: write
@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ inputs.tag }}"
-          title="ANDROID-PALM-PROMOTER ${{ inputs.version }}"
+          title="nile ${{ inputs.version }}"
           notes=$'Fixed latest APK asset:\n\nhttps://github.com/'"$GITHUB_REPOSITORY"'/releases/latest/download/${{ inputs.asset_name }}'
 
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
